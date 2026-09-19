@@ -35,15 +35,18 @@
 
 **Objectif : comprendre ce qu'on a entre les mains avant de commencer à modifier, avec une méthode explicite plutôt qu'une impression générale.**
 
-- [ ] **Faire tourner OGameX en local** tel quel (sans modification), vérifier que ça fonctionne
-- [ ] **Explorer avec Claude Code** la structure du projet : où sont les formules de production, le système de combat, les modèles de données (planètes, bâtiments, flottes, recherche)
-- [ ] **Vérifier la présence du système d'Expédition** (probable, à confirmer) — pourrait couvrir directement une partie du contenu PvE "missions à risque" prévu au GDD (section 5.8)
-- [ ] **Construire un tableau de correspondance GDD ↔ OGameX**, système par système : pour chaque mécanique du GDD (production, bâtiments, flotte/combat, expéditions, héros/gouverneur, prestige d'empire, Mode de Guerre, craft/forge), noter si elle existe déjà dans OGameX et estimer l'effort d'adaptation (faible/moyen/élevé). Ce tableau donne une vision honnête de ce que la base fait réellement gagner comme temps — probablement beaucoup sur l'économie/combat de base, peu sur nos systèmes différenciants (héros, prestige, Mode de Guerre, craft), qui demanderont un vrai développement quelle que soit la base choisie.
-- [ ] **Tâche pilote sur le système Héros** : faire ajouter par Claude Code un élément minimal non fonctionnel (ex : une table `heroes` vide liée à une `planet`, exposée via une route basique) directement dans le code d'OGameX. Objectif : révéler concrètement la friction d'extension (conventions du framework, migrations, etc.) en quelques dizaines de minutes plutôt que de se fier à une analyse uniquement théorique.
-- [ ] **Identifier les points d'accroche** pour les autres mécaniques différenciantes : où insérer la logique de bots PvE, où ajouter la table de prestige d'empire, où greffer la logique du Mode de Guerre
-- [ ] **Décision finale** : si l'audit et la tâche pilote ne révèlent aucun blocage réel et spécifique, on poursuit sur OGameX. Un blocage factuel et concret (pas une inquiétude générale) serait le seul motif légitime de reconsidérer une base différente ou un départ à zéro.
+- [x] **Faire tourner OGameX en local** tel quel (sans modification), vérifier que ça fonctionne — fait le 2026-09-15, stack Docker Compose complète (db/app/scheduler/queue/webserver/reverb/phpmyadmin), compte admin Legor opérationnel.
+- [x] **Explorer avec Claude Code** la structure du projet : où sont les formules de production, le système de combat, les modèles de données (planètes, bâtiments, flottes, recherche) — fait le 2026-09-15, cartographie complète (voir tableau de correspondance ci-dessous pour les chemins de fichiers clés).
+- [x] **Vérifier la présence du système d'Expédition** — confirmé le 2026-09-15 : très développé (`app/GameMissions/ExpeditionMission.php`, 1138 lignes), combat PNJ dynamique, butin pondéré, couvre déjà l'essentiel du besoin PvE "missions à risque" du GDD (5.8).
+- [x] **Construire un tableau de correspondance GDD ↔ OGameX** — fait le 2026-09-18 (voir le récapitulatif d'audit dans la conversation ; à formaliser dans le GDD si besoin).
+- [x] **Tâche pilote sur le système Héros** — fait et largement dépassée le 2026-09-15 au 2026-09-18 : au-delà du squelette minimal prévu, le système héros a une vraie table + modèle, un arbre de talents (3 branches, 16 nœuds), un inventaire d'équipement à 8 emplacements façon Diablo, un panneau de stats, une identité visuelle (arcane mystique sombre), le tout fonctionnel sur `/heroes`. Zéro friction de framework rencontrée.
+- [x] **Identifier les points d'accroche** pour les autres mécaniques différenciantes :
+  - **Bots PvE** : `NPCPlayerService` / `NPCPlanetService` / `NPCFleetGeneratorService` (`app/Services/`), déjà fonctionnels, utilisés aujourd'hui uniquement dans le contexte des expéditions — point d'accroche direct pour du PvE en galaxie.
+  - **Prestige d'empire** : `app/Models/Highscore.php` (colonnes general/economy/research/military + rangs) comme amorce de jauge par joueur.
+  - **Mode de Guerre** : aucun équivalent existant — ajout neuf le plus probable : un champ sur `users` (statut + timestamp de bascule pour le cooldown 72h), un middleware dans le style de `banned`/`globalgame` déjà utilisés dans les groupes de routes (`routes/web.php`), et une vérification insérée dans `AttackMission::isMissionPossible()` (`app/GameMissions/AttackMission.php`) pour n'autoriser une cible que si attaquant et défenseur sont tous deux en Mode de Guerre.
+- [x] **Décision finale** — validée le 2026-09-18 : **on continue sur OGameX**. Aucun blocage factuel trouvé sur le moteur de jeu (PHPStan niveau 8 sans erreur sur 705 fichiers, 1109 tests passants, architecture service-layer propre). Le seul point dur réel (CSS/gabarit visuel legacy, ~113k lignes, conteneur figé) est cosmétique, indépendant du moteur de jeu, et volontairement reporté en Phase 3.
 
-**Durée estimée : 2-3 sessions. C'est une phase de compréhension et de validation empirique, pas encore de vraie modification — ne pas la sauter, elle évite des allers-retours coûteux plus tard.**
+**Phase 2 terminée (2026-09-18).**
 
 ---
 
