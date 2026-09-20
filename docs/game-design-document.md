@@ -159,19 +159,40 @@ Rappel du constat du 2026-09-18 : OGameX n'a qu'une seule technologie de bonus d
 
 **Catalogue complet vérifié le 2026-09-18** — 9 vaisseaux militaires (`app/GameObjects/MilitaryShipObjects.php`) + 8 civils (`app/GameObjects/CivilShipObjects.php`), 17 au total. Plusieurs unités n'étaient pas dans la version précédente du tableau (marquées **[TBD]** ci-dessous), dont 3 liées aux classes de personnage (Collector/General/Discoverer, cf. 5.5).
 
-**Militaires :**
+**Militaires — décidé le 2026-09-21 : refonte complète en 3 catégories thématiques (sol/monté/siège) pour donner aux joueurs une vraie base de theorycrafting de composition d'armée**, plutôt qu'un mapping 1:1 plat sur l'ordre des vaisseaux OGameX. Les contres/rôles ("anti-X") s'appuient sur le système de **rapidfire** déjà présent dans le moteur de combat (chance de retirer sur la même cible contre un type de vaisseau donné) — pas besoin d'une nouvelle mécanique de dégâts de zone, OGameX n'en a pas nativement.
 
-| Ogame/OGameX | [Nom du jeu] | Notes |
-|---|---|---|
-| Chasseur léger (`light_fighter`) | **Soldat** | Unité de base, peu coûteuse, nombre |
-| Chasseur lourd (`heavy_fighter`) | **Garde** | Infanterie mieux protégée |
-| Croiseur (`cruiser`) | **Cavalier** | Unité mobile, polyvalente |
-| Vaisseau de bataille (`battle_ship`) | **Paladin** | Unité lourde d'élite |
-| Croiseur de bataille (`battlecruiser`) | **[TBD]** | Absent du lexique jusqu'ici |
-| Bombardier (`bomber`) | **[TBD]** | Absent du lexique — spécialisé anti-défenses statiques dans Ogame |
-| Destructeur (`destroyer`) | **Rôdeur des ombres** | Spécialiste à dégâts élevés — l'ancienne ligne "Traqueur / Destructeur" est clarifiée : c'est bien `destroyer` uniquement |
-| Étoile de la mort (`deathstar`, tier ultime) | **[TBD]** | *Idée gardée de côté* : un golem de guerre réactivé de l'ancienne cité déchue plutôt qu'une unité générique — pas encore décidé d'inclure une telle unité dans le jeu |
-| Reaper (`reaper`) | **[TBD]** | Absent du lexique — vaisseau spécifique à la classe General (cf. 5.5), collecte 30 % des débris en plus quel que soit le propriétaire |
+⚠️ Le roster militaire natif d'OGameX ne compte que 9 vaisseaux : 7 sont réaffectés ci-dessous à un rôle (reskin direct, effort faible), les 5 marqués **neuf** n'ont aucun équivalent dans le code et demanderont de vraies stats/coûts/équilibrage à concevoir (effort élevé, hors reskin). La colonne *Description* sert de brief visuel pour prompter les IA génératives d'images le moment venu.
+
+*Unités au sol (6) :*
+
+| Ogame/OGameX | [Nom du jeu] | Rôle gameplay | Description (prompt image) | Effort |
+|---|---|---|---|---|
+| Chasseur léger (`light_fighter`) | **Soldat** | Chair à canon — bon marché, nombreux, fragile | Soldat humain en armure légère de cuir clouté et cotte de mailles partielle, bouclier rond en bois cerclé de fer, épée courte ou lance simple, tenue austère et fonctionnelle, posture de ligne de fantassin bon marché, nombreux plutôt qu'individuellement impressionnant | reskin |
+| Chasseur lourd (`heavy_fighter`) | **Garde** | Tank de ligne — encaisse en première ligne | Fantassin humain robuste en armure de plates lourde, grand bouclier tour métallique, hallebarde ou épée large, casque fermé, silhouette massive et statique, conçu pour absorber les coups en première ligne | reskin |
+| Destructeur (`destroyer`) | **Rôdeur des ombres** | Puissante mais mono-cible — le plus gros dégât brut du roster commun, abat ses cibles une à une | Guerrier/assassin d'élite en armure sombre ajustée, cape noire en lambeaux, lames jumelles ou grande épée à deux mains, visage partiellement masqué, légère aura de magie sombre autour des armes, posture furtive et menaçante | reskin |
+| *(aucun)* | **Piquier des Marches** | Anti-monté — contre dédié face aux unités montées adverses | Fantassin en armure moyenne portant une longue pique/hallebarde à crochet anti-cavalerie, bouclier compact, posture défensive plantée au sol, équipement rustique de garde-frontière, teintes terreuses | **neuf** |
+| *(aucun)* | **Mage de Combat** | Anti-unités légères — dévastateur contre la piétaille adverse, fragile | Mage humain en robe/armure légère renforcée de runes lumineuses, bâton ou orbe arcanique d'où jaillit une énergie mana bleu-violet, cercle runique flottant au sol, posture offensive de lancement de sort, silhouette frêle entourée d'une aura de puissance magique explosive | **neuf** |
+| *(aucun)* | **Franc-Archer** | Anti-mobilité — tirs à distance ciblant unités rapides/légères | Archer humain en tenue de cuir légère et cape, grand arc ou arbalète, carquois garni de flèches à pointe runique, posture de tir à distance, silhouette agile et mobile, couleurs discrètes de camouflage forestier | **neuf** |
+
+*Unités montées (4) :*
+
+| Ogame/OGameX | [Nom du jeu] | Rôle gameplay | Description (prompt image) | Effort |
+|---|---|---|---|---|
+| Croiseur (`cruiser`) | **Cavalier** | Mobile/anti-unités — hérite d'un fort rapidfire anti-piétaille et anti-défenses légères | Cavalier humain en armure moyenne monté sur un cheval de guerre rapide, lance ou épée à une main, bouclier léger, silhouette dynamique en pleine charge, bannière/tabard aux couleurs du royaume | reskin |
+| Vaisseau de bataille (`battle_ship`) | **Paladin** | Tank d'élite — pilier défensif d'une charge montée | Chevalier lourdement blindé en armure de plates complète ornée de symboles sacrés/dorés, monté sur un destrier caparaçonné massif, grand bouclier héraldique, épée ou masse d'arme lourde, aura de lumière protectrice, silhouette imposante et noble | reskin |
+| Croiseur de bataille (`battlecruiser`) | **Pourfendeur** | Duelliste/anti-élite — hérite d'un rapidfire massif vs Garde/Cavalier/Paladin adverses | Chevalier solitaire en armure sombre distinctive, monté sur un coursier agile, lance ou épée à deux mains prête au duel, cape flottante, posture de confrontation directe, allure de traqueur d'élite spécialisé dans l'affrontement d'autres cavaliers/unités lourdes adverses | reskin |
+| *(aucun)* | **Chevaucheur des Plaines** | Harceleur/chair à canon monté — frappe-et-recule | Cavalier léger en armure minimaliste de cuir, monté sur un cheval rapide et nerveux, arc court ou hache de jet, silhouette penchée en avant façon raid éclair, couleurs sombres/discrètes, posture de frappe-et-fuite | **neuf** |
+
+*Engins de siège (2) :*
+
+| Ogame/OGameX | [Nom du jeu] | Rôle gameplay | Description (prompt image) | Effort |
+|---|---|---|---|---|
+| Bombardier (`bomber`) | **Brise-Rempart** | Anti-défenses — hérite du rapidfire massif déjà présent contre toutes les tourelles/canons | Immense machine de siège tractée, renforcée de plaques métalliques, montée sur roues massives, bras de catapulte ou canon à mana orienté vers des fortifications, équipage réduit visible, lente et imposante, clairement conçue pour détruire des structures fixes plutôt que des troupes | reskin |
+| *(aucun)* | **Catapulte de Rupture** | Anti-fortification — percer portes et remparts plutôt que combattre des troupes | Grande catapulte/bélier de siège renforcé de runes arcaniques gravées dans le bois et le métal, tête frappante ou bras de lancement massif à l'avant, structure tractée par plusieurs bêtes de trait, conçue pour percer portes et remparts fortifiés | **neuf** |
+
+**Décidé le 2026-09-21 — Étoile de la mort (`deathstar`) : supprimée complètement.** Vérifié dans le code : attaque de 200 000 contre 2 000-2 800 pour les meilleures unités du roster normal (destroyer/reaper), un rapport de puissance de 70-100x qui casserait l'équilibrage — y compris en PvE où elle trivialiserait le contenu. Pas d'unité ultime en V1, l'idée de "golem de guerre" du lore reste disponible pour du contenu narratif futur sans être une unité productible en masse.
+
+Reaper (`reaper`) reste **[TBD]** — vaisseau spécifique à la classe héros General (cf. 5.5), hors du roster militaire standard ci-dessus, à traiter avec le reste du système héros plutôt qu'ici.
 
 **Civils :**
 
