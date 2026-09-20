@@ -15,6 +15,7 @@ Ces trois documents dans `docs/` définissent la vision, les mécaniques et l'un
 - **[docs/feuille-de-route-projet-jeu.md](docs/feuille-de-route-projet-jeu.md)** — Roadmap complète du projet par phases (cadrage, setup, audit technique, reskin, mécaniques différenciantes, hébergement, contenu, ouverture publique, monétisation). À consulter pour savoir où en est le projet et ce qui vient ensuite.
 - **[docs/game-design-document.md](docs/game-design-document.md)** — Game Design Document (GDD) : piliers de gameplay, boucles courte/moyenne/longue, lexique de conversion Ogame→jeu fantasy (ressources, bâtiments, recherches, unités), systèmes détaillés (production, combat, Mode de Guerre, héros/gouverneur, prestige d'empire, craft/forge, bots PvE, alliance). Document vivant, plusieurs sections encore marquées **[TBD]**.
 - **[docs/lore.md](docs/lore.md)** — Univers narratif : cosmologie (Straumar, Neuf Sphères), la Rupture (chronologie), les Vahrun, factions ennemies, races jouables, structure cartographique (Régions/Contrées/Éclats), noms encore en discussion.
+- **[docs/direction-artistique-unites.md](docs/direction-artistique-unites.md)** — Briefs visuels (prompts IA générative, en anglais) pour les unités militaires du lexique, avec un préambule de style commun. Document de travail pour la Phase 3 de la roadmap (DA Midjourney).
 
 Ces documents sont vivants et évolueront au fil du projet — s'y référer plutôt que de supposer des mécaniques ou noms non confirmés.
 
