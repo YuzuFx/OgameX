@@ -50,16 +50,53 @@
 
 ---
 
-## Phase 3 — Reskin thématique (spatial → heroic fantasy)
+## Phase 3 — Création de l'interface (refonte, pas reskin)
 
-**Objectif : transformer la coquille Ogame en univers fantasy, sans encore toucher aux mécaniques avancées.**
+**Objectif : ne pas habiller la coquille Ogame, mais créer notre propre interface — en conservant le moteur OGameX comme socle invisible.**
 
-- [ ] **Renommer les entités de base** : planètes → domaines/fiefs, flotte → armée, technologies → savoirs/arts, etc. (lexique complet à définir en Phase 0)
-- [ ] **Démarrer la direction artistique** avec Midjourney : planche de style (`--sref`) pour figer palette et ambiance, premiers essais de bâtiments/unités
-- [ ] **Remplacer les assets visuels de base** un par un (bâtiments, unités, fond d'écran, UI) au fur et à mesure que la DA se stabilise
-- [ ] **Adapter les formules si besoin** (les formules Ogame de base peuvent rester quasi identiques en V1, seul l'habillage change)
+*Cadrage arrêté le 2026-09-26 dans [Décision d'architecture — Refonte de l'interface sur moteur OGameX conservé](decision-architecture-cible.md). Ce document fait référence pour la stack, le découpage domaine/API, l'ordre de bascule et les risques ; la présente phase n'en est que le plan d'exécution.*
 
-**Durée estimée : en continu sur plusieurs semaines, en parallèle des phases suivantes — le reskin visuel n'a pas besoin d'être fini avant de coder les nouvelles mécaniques.**
+**Ce qui change par rapport au cadrage initial.** La Phase 3 prévoyait un reskin : renommer les entités et remplacer les assets dans les vues Blade existantes. C'est abandonné. Les 113 609 lignes de CSS legacy et les 25 045 lignes de Blade sont **jetées, pas habillées** ; le moteur (≈30 000 lignes de logique, 40 779 lignes de tests) est **conservé intégralement** et exposé par une API JSON. Conséquence directe : **il n'y a plus de passe de renommage globale** — le lexique fantasy du GDD s'applique au fil de chaque écran créé, chaque écran naissant directement fantasy.
+
+### 3a — Mockups et direction artistique
+
+*Prérequis absolu : aucune ligne de front n'est écrite avant que le design system soit arrêté.*
+
+- [ ] **Planche de style Midjourney** (`--sref`) pour figer palette, matières et ambiance
+- [ ] **Mockups des écrans de la boucle courte** : aperçu, ressources, bâtiments, recherche, chantier, défense
+- [ ] **Mockup de l'écran héros** (il sert de pilote technique en 3b)
+- [ ] **Design system arrêté** : palette, typographie, grille, et états des composants récurrents (file d'attente, carte de bâtiment, compteur, ligne de ressource)
+- [ ] **Trancher la densité d'affichage et le comportement responsive** — c'est le point de départ de toute cette phase : sortir du conteneur figé à 990 px
+
+### 3b — Socle technique et pilote
+
+- [ ] **Passer le runtime en FrankenPHP + Laravel Octane** (mode worker)
+- [ ] **Basculer cache, sessions et file d'attente sur Redis** et installer Horizon (aujourd'hui `QUEUE_CONNECTION=database`)
+- [ ] **Poser le squelette d'API** `/api/v1` + Sanctum, avec la règle stricte « aucune logique de jeu dans les contrôleurs »
+- [ ] **Poser le shell React** : React 19 + TypeScript sur le Vite 8 déjà présent, TanStack Router + TanStack Query, Tailwind 4 + shadcn/ui, Zustand, Motion
+- [ ] **Implémenter le design system de 3a** sous forme de composants
+- [ ] **Mettre en place Playwright** pour les parcours d'interface
+- [ ] **Pilote — écran Héros** : code déjà écrit en septembre 2026, sans dette legacy. Valide la chaîne complète (service → API → React → tests) sur un terrain maîtrisé avant de toucher aux écrans historiques
+- [ ] **Confirmer que les 1109 tests Pest passent toujours** — ils doivent, le domaine n'étant pas modifié
+
+### 3c — Bascule écran par écran
+
+*Cohabitation assumée : les écrans non encore refaits continuent de tourner en Blade derrière la même session. Le jeu reste jouable en permanence — aucun écran n'est cassé avant que son remplaçant ne fonctionne.*
+
+- [ ] **Boucle courte** : aperçu, ressources, installations, recherche, chantier, défense (écrans les plus consultés, formes d'UI répétitives)
+- [ ] **Chantier de la résolution temporelle** : horodatages absolus côté serveur, interpolation du compte à rebours côté client, jobs Redis planifiés, diffusion Reverb à la résolution (§5 de la décision d'architecture). Verrou et idempotence obligatoires pour éviter toute double résolution
+- [ ] **Temps & espace** : galaxie, puis flotte découpée en sous-étapes (envoi, liste des mouvements, rappel, unions) — le plus gros écran du jeu, à ne pas basculer d'un bloc
+- [ ] **Rapports** : messagerie, rapport de combat, rapport d'espionnage (fort potentiel de différenciation visuelle)
+- [ ] **Social** : alliance, dépôt d'alliance, chat, amis, classement
+- [ ] **Périphérie** : options, marchand, prime, arbre des savoirs, phalange, porte de saut, gestion des domaines
+- [ ] **Retirer le middleware de résolution paresseuse** (`GlobalGame`) une fois les jobs planifiés éprouvés
+- [ ] **Supprimer le CSS legacy et les vues Blade obsolètes** — dernière étape, uniquement quand plus rien ne les appelle
+
+**Non refait volontairement :** l'interface d'administration serveur reste en Blade. Seul Gregory l'utilise ; la réécrire n'apporterait rien.
+
+**Articulation avec la Phase 4 :** les deux phases se recouvrent volontairement. Les mécaniques différenciantes de la Phase 4 sont développées **directement dans la nouvelle interface**, jamais en Blade — sinon on produirait de la dette à jeter. En pratique : 3a et 3b doivent être terminés avant d'attaquer la Phase 4, puis 3c et la Phase 4 avancent en parallèle. Le système héros de la Phase 4.2 est déjà largement construit (Phase 2) et sert de pilote en 3b.
+
+**Durée estimée : la phase la plus structurante du projet. 3a et 3b forment un bloc incontournable de plusieurs sessions ; 3c s'étale ensuite sur plusieurs mois, écran par écran, en parallèle de la Phase 4. Chaque lot de 3c est livrable indépendamment, sans jamais rendre le jeu injouable.**
 
 ---
 
@@ -85,7 +122,7 @@
 *À faire dès que la Phase 4.1-4.2 est jouable, pas besoin d'attendre la fin de la Phase 4.*
 
 - [ ] **Vérifier le support Docker** de ton NAS (Container Manager / Container Station)
-- [ ] **Déployer la stack** (Laravel + MySQL + Redis si besoin) sur le NAS via Docker
+- [ ] **Déployer la stack** (FrankenPHP/Octane + MySQL + **Redis, désormais requis** pour la file d'attente et la résolution planifiée — cf. Phase 3b — + Reverb) sur le NAS via Docker
 - [ ] **Mettre en place Cloudflare Tunnel** pour exposer le jeu sans ouvrir de ports sur ta box
 - [ ] **Configurer une sauvegarde automatique de la base de données**, séparée du NAS
 - [ ] **Inviter tes potes à tester** et itérer sur les retours
@@ -140,8 +177,12 @@
 
 ## Résumé — ce qui vient tout de suite
 
-1. **Phase 0** : on finalise le GDD ensemble (prochaine session naturelle)
-2. **Phase 1** : setup VSCode + Claude Code + GitHub + Docker local
-3. **Phase 2** : premier audit du repo OGameX avec moi
+*Mis à jour le 2026-09-26. Phases 0 à 2 terminées : environnement en place, audit OGameX bouclé, décision de rester sur OGameX validée le 2026-09-18, lexique du GDD essentiellement arrêté.*
 
-Le reste s'enchaîne progressivement — pas besoin de tout voir d'un coup, on avance brique par brique à ton rythme.
+1. **Phase 3a — mockups et direction artistique.** C'est le prochain jalon réel, et il est bloquant : aucune ligne d'interface ne s'écrit avant que le design system soit arrêté.
+2. **Phase 3b — socle technique** (Octane, Redis, API, shell React) puis **pilote sur l'écran Héros**.
+3. **Phase 3c en parallèle de la Phase 4** — bascule écran par écran, les nouvelles mécaniques étant développées directement dans la nouvelle interface.
+
+Reste ouvert côté conception : les **[TBD]** du GDD (dont la mécanique de l'Hôpital) et les noms encore en discussion dans le lore. Ils n'empêchent pas de démarrer la Phase 3a.
+
+Le reste s'enchaîne progressivement — on avance brique par brique à ton rythme.
